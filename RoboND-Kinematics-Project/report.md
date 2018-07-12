@@ -6,9 +6,10 @@
 
 [image1]: ./misc_images/fk.png
 [image2]: ./misc_images/misc3.png
-[image3]: ./misc_images/1
-[image4]: ./misc_images/2
-[image5]: ./misc_images/3
+[image3]: ./misc_images/3
+[image4]: ./misc_images/4
+[image5]: ./misc_images/5
+[image5]: ./misc_images/6
 ### Kinematic Analysis
 
 This is the diagram of the Kuka KR210 robot:
@@ -188,16 +189,17 @@ thus, we can get the rest angles:
 
 **After finish setting up the code, I use the IK_debug.py to test the error and the time for code.**
 
-```
-
 ### Result 
+
 the final result of the testing IK_server.py is shown below:
 
-![alt text][image3]
+![alt text][image6]
+
+![alt text][image5]
 
 ![alt text][image4]
 
-![alt text][image5]
+![alt text][image3]
 
 I have tested 8/10 for most of the tests, but this is still lots of improvement in this project,
 1. the timing issue of the project, reponses didn't give enough time for the gripper to work with
