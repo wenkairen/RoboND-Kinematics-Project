@@ -4,11 +4,15 @@
 
 [//]: # (Image References)
 
-[image1]: ./misc_images/misc1.png
+[image1]: ./misc_images/fk.png
 [image2]: ./misc_images/misc3.png
 [image3]: ./misc_images/misc2.png
 
 ### Kinematic Analysis
+
+This is the diagram of the Kuka KR210 robot:
+
+![alt text][image1]
 
 ### DH parameter Kuka KR210 robot
 
