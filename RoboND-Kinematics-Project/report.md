@@ -129,16 +129,17 @@ After we have Ending effatcor posion and distance of the wrist joint to gripper,
 
 WC is now having position of wrist center (Wx, Wy, Wz).
 
-To find 𝜃1, we need to project Wz onto the ground plane Thus,
-
-**Theta1=atan2(Wy,Wx)**
+To find 𝜃1,  then we use Wz to project onto the ground plane, we get theta1:
 
 ```python
     theta1 = atan2(WC[1],WC[0])
 ```
-Using trigonometry, we can calculate **𝜃2 and 𝜃3**, a is the right side of the triangle, c is the left and b is the bottom.
+Using trigonometry,  we can calculate 𝜃2 and 𝜃3, a is the right side of the triangle, c is the left and b is the bottom.
+
+shown in below image:
 
 ![alt text][image2]
+
 
 ```python
 			side_a = 1.501
@@ -152,19 +153,7 @@ Using trigonometry, we can calculate **𝜃2 and 𝜃3**, a is the right side of
 			theta2 = pi/2 - angle_a - atan2(WC[2] - 0.75, sqrt(WC[0]*WC[0] + WC[1]*WC[1]) - 0.35)
 			theta3 = pi/2 - (angle_b + 0.036)
 ```
-we need to find values of the final three joint variables **𝜃4, 𝜃5 and 𝜃6**.
-
-Using the individual DH transforms we can obtain the resultant transform and hence resultant rotation by:
-
-**R0_6 = R0_1*R1_2*R2_3*R3_4*R4_5*R5_6**
-
-Since the overall RPY (Roll Pitch Yaw) rotation between base_link and gripper_link must be equal to the product of individual rotations between respective links, following holds true:
-
-**R0_6 = R_EE**
-
-where,
-
-**R_EE** = Homogeneous RPY rotation between base_link and gripper_link as calculated above.
+ we can move on to  𝜃4, 𝜃5 and 𝜃6.
 
 We can substitute the values we calculated for **𝜃1, 𝜃2 and 𝜃3**. in their respective individual rotation matrices and pre-multiply both sides of the above equation by **inv(R0_3)** which leads to:
 
@@ -180,20 +169,18 @@ The resultant matrix on the RHS (Right Hand Side of the equation) does not have 
     # Get rotation matrix R3_6 from (inverse of R0_3 * R_EE)
     R3_6 = R0_3.inv(method="LU") * ROT_EE
 ```
-
-I have added if/else to select the best solution for **𝜃4, 𝜃5 and 𝜃6**.
+thus, we can get the rest angles:
 
 ```python
-# Euler angles from rotation matrix
-            theta5 = atan2(sqrt(R3_6[0,2]*R3_6[0,2] + R3_6[2,2]*R3_6[2,2]),R3_6[1,2])
-            
-            # select best solution based on theta5
-            if (theta5 > pi) :
-                theta4 = atan2(-R3_6[2,2], R3_6[0,2])
-                theta6 = atan2(R3_6[1,1],-R3_6[1,0])
-            else:
-                theta4 = atan2(R3_6[2,2], -R3_6[0,2])
-                theta6 = atan2(-R3_6[1,1],R3_6[1,0])
+			# Euler angles from rotation matrix
+			theta5 = atan2(sqrt(R3_6[0,2]*R3_6[0,2] + R3_6[2,2]*R3_6[2,2]),R3_6[1,2])
+			# select best solution based on theta5
+			if (theta5 > pi) :
+				theta4 = atan2(-R3_6[2,2], R3_6[0,2])
+				theta6 = atan2(R3_6[1,1],-R3_6[1,0])
+			else:
+				theta4 = atan2(R3_6[2,2], -R3_6[0,2])
+				theta6 = atan2(-R3_6[1,1],R3_6[1,0])
 ```
 
 **After finish setting up the code, I use the IK_debug.py to test the error and the time for code.**
