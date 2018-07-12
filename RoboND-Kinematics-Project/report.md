@@ -6,10 +6,10 @@
 
 [image1]: ./misc_images/fk.png
 [image2]: ./misc_images/misc3.png
-[image3]: ./misc_images/3
-[image4]: ./misc_images/4
-[image5]: ./misc_images/5
-[image5]: ./misc_images/6
+[image3]: ./misc_images/3.jpg
+[image4]: ./misc_images/4.jpg
+[image5]: ./misc_images/5.jpg
+[image5]: ./misc_images/6.jpg
 ### Kinematic Analysis
 
 This is the diagram of the Kuka KR210 robot:
