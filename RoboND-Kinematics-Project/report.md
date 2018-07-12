@@ -6,8 +6,9 @@
 
 [image1]: ./misc_images/fk.png
 [image2]: ./misc_images/misc3.png
-[image3]: ./misc_images/misc2.png
-
+[image3]: ./misc_images/1
+[image4]: ./misc_images/2
+[image5]: ./misc_images/3
 ### Kinematic Analysis
 
 This is the diagram of the Kuka KR210 robot:
@@ -153,13 +154,15 @@ shown in below image:
 			theta2 = pi/2 - angle_a - atan2(WC[2] - 0.75, sqrt(WC[0]*WC[0] + WC[1]*WC[1]) - 0.35)
 			theta3 = pi/2 - (angle_b + 0.036)
 ```
- we can move on to  𝜃4, 𝜃5 and 𝜃6.
+we can move on to  𝜃4, 𝜃5 and 𝜃6.
 
-We can substitute the values we calculated for **𝜃1, 𝜃2 and 𝜃3**. in their respective individual rotation matrices and pre-multiply both sides of the above equation by **inv(R0_3)** which leads to:
+due to the relation of the matrix 
+R0_6 = R_EE
+so R0_3 * R3_6 = R_EE
 
-**R3_6 = inv(R0_3) * R_EE**
+We can substitute the values we calculated for 𝜃1, 𝜃2 and 𝜃3 to get R0_3, then, we get inverse of R0_3, thus,
 
-The resultant matrix on the RHS (Right Hand Side of the equation) does not have any variables after substituting the joint angle values, and hence comparing LHS (Left Hand Side of the equation) with RHS will result in equations for **𝜃4, 𝜃5 and 𝜃6**.
+R3_6 = inv(R0_3) * R_EE
 
 ```python
     # Extract rotation matrix R0_3 from transformation matrix T0_3 the substitute angles q1-3
@@ -192,6 +195,12 @@ the final result of the testing IK_server.py is shown below:
 
 ![alt text][image3]
 
-![alt text][image3]
+![alt text][image4]
 
-![alt text][image3]
+![alt text][image5]
+
+I have tested 8/10 for most of the tests, but this is still lots of improvement in this project,
+1. the timing issue of the project, reponses didn't give enough time for the gripper to work with
+2. the Gazebo can eassilly crush for some reason, maybe running too long?
+3. this method using too much geometry of calculation, which I think is not efficient and can't be generalized for other robot arms, we should use numerically next time, which is more reasonable.
+
