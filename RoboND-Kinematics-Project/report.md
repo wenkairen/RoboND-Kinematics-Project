@@ -10,11 +10,23 @@
 [image4]: ./misc_images/4.jpg
 [image5]: ./misc_images/5.jpg
 [image5]: ./misc_images/6.jpg
+[image7]: ./misc_images/7.jpg
+[image8]: ./misc_images/urdf.jpg
 ### Kinematic Analysis
 
 This is the diagram of the Kuka KR210 robot:
 
 ![alt text][image1]
+
+The following images for reference.   
+![image7][7]
+
+the link frames(coordinate systems) choosen according to Modified DH convention. `O(i)` is the origin for link i frame, and `X(i)`, `Z(i)` are the X and Z axis correspondingly, and Z represents the axis of rotation(translation in case of prismatic joints). Since we are using a right handed coordinate system, `Y(i)` can be calculated accordingly.   
+
+
+![image8][urdf]
+
+the reference frames as specified in the URDF file. Here, `Ojointi` represents ith frame origin(also represented by a black triangle). It also shows various distance between these joint positions as specified in URDF. We will be refering to these values in our description for DH parameter table.
 
 ### DH parameter Kuka KR210 robot
 
@@ -27,6 +39,40 @@ Links | i | alpha(i-1) | a(i-1) | d(i) | theta(i) |
 4->5 | 5 | 90 | 0 | 0 | q5 |
 5->6 | 6 | -90 | 0 | 0 | q6 |
 6->EE | 7 | 0 | 0 | 0.303 | q7 |
+
+Here,   
+`alpha(i-1)` : Angle between Z(i-1) and Z(i) measured along X(i-1)   
+`a(i-1)` : Link length, distance between Z(i-1) and Z(i), measured along X(i-1)   
+`d(i)`  : Link offset, distance between X(i-1) and X(i), measured along Z(i-1), variable in prismatic joints(there are no prismatic joints in the given problem)   
+`q(i)` : Joint angle, Angle between X(i-1), X(i) measured along Z(i), variable in revolute joints.   
+Also,   
+`Link 0` represents the base link, and   
+`Link 7` represents the gripper link, which is fixed. It contains left and right grippers(not controlled by IK code.)   
+
+**Link 1 :** `Z0`(0 0 1) is *collinear* to `Z1`(0 0 1), `alpha0 = 0`, `a0 = 0`, `d1 = 0.33(joint1.z) + 0.42(joint2.z) = 0.75`, and `q1` is *unknown*.   
+
+**Link 2 :** `Z1`(0 0 1) is *perpendicular* to `Z2`(0 1 0), so, `alpha1 = -pi/2`, `a1 = 0.35(joint2.x)`, and `d2 = 0` since `X1` intersects `X2` at `O2`. Also, we can see that when joint2 is in *zero* configuration, there is an offset of `-pi/2` from `X1` to `X2`, measured along `Z2`. So, we also need to substitute `q2` with `q2 - pi/2` in the parameter table.   
+
+**Link 3 :**, since `Z2`(0 1 0) is *parallel* to `Z3`(0 1 0), `alpha2 = 0`, `a2 = 1.25(joint3.z)` along `X2`. Also, `X2` and `X3` are collinear, so `d3 = 0`.   
+
+**Link 4 :**, `Z3`(0 1 0) and `Z4`(1 0 0) are *perpendicular*, so `alpha3 = -pi/2` and `a3 = -0.054(joint4.z)`, and `d4 = 0.96(joint4.x) + 0.54(joint5.x) = 1.50`.   
+*Note:* We have choosen O4, O5 and O6 to be co-incident with the Wrist Center(WC). This helps in separating the IK problem into computation of the Wrist Center and then Wrist Orientation.   
+
+**Link 5 :**, `Z4`(1 0 0) and `Z5`(0 1 0) are *perpendicular* and *intersect* at `O5`, so `alpha4 = pi/2` and `a4 = 0`. Also, `d5 = 0`, since `X4` and `X4` are *collinear*.   
+
+**Link 6 :**, `Z5`(0 1 0) and `Z6`(1, 0, 0) are *perpendicular* and *intersect* at `O5`, so `alpha5 = -pi/2` and `a5 = 0`, `d6 = 0`, since `X5` and `X6` are *collinear*.   
+
+**Link 7(Gripper Link) :**, this is a fixed link, with a translation along `Z6`. So, `Z6` and `Zg` are *collinear*, so `alpha6 = 0`, `a6 = 0` and `d6 = 0.193(joint6.x) + 0.11(gripper_joint.x)`. Also, since this is fixed(w.r.t link 6), `q7 = 0`.    
+
+
+The following figure represents frame assignment between two links in the Modified DH convention.
+![DH Convention][dh-convention]  
+
+*Modified DH convention axes assignment and parameters.
+
+From the above image it is clear thet the total transform between `link(i-1)` and `link(i)` can be thought of as a *rotation* by `alpha(i-1)` along `X(i-1)`, *translation* by `a(i-1)` along `X(i-1)`, *rotation* by `q(i)` along `Z(i)`, and finally *translation* by `d(i)` along `Z(i)`. 
+
+![DH Transform][dh-transform]   
 
 Python code to represent DH parameters table is:
 
@@ -56,6 +102,44 @@ def TF_Matrix(alpha, a, d, q):
 	return TF
 ```
 Then using the following code to substitute the DH parameters into the transformation matrix: 
+```
+T0_1 = Matrix([[cos(q1), -sin(q1), 0, a0],
+               [sin(q1) * cos(alpha0), cos(q1) * cos(alpha0), -sin(alpha0), -sin(alpha0) * d1],
+               [sin(q1) * sin(alpha0), cos(q1) * sin(alpha0), cos(alpha0), cos(alpha0) * d1],
+               [0, 0, 0, 1]])
+
+T1_2 = Matrix([[cos(q2), -sin(q2), 0, a1],
+               [sin(q2) * cos(alpha1), cos(q2) * cos(alpha1), -sin(alpha1), -sin(alpha1) * d2],
+               [sin(q2) * sin(alpha1), cos(q2) * sin(alpha1), cos(alpha1), cos(alpha1) * d2],
+               [0, 0, 0, 1]])
+
+T2_3 = Matrix([[cos(q3), -sin(q3), 0, a2],
+               [sin(q3) * cos(alpha2), cos(q3) * cos(alpha2), -sin(alpha2), -sin(alpha2) * d3],
+               [sin(q3) * sin(alpha2), cos(q3) * sin(alpha2), cos(alpha2), cos(alpha2) * d3],
+               [0, 0, 0, 1]])
+
+T3_4 = Matrix([[cos(q4), -sin(q4), 0, a3],
+               [sin(q4) * cos(alpha3), cos(q4) * cos(alpha3), -sin(alpha3), -sin(alpha3) * d4],
+               [sin(q4) * sin(alpha3), cos(q4) * sin(alpha3), cos(alpha3), cos(alpha3) * d4],
+               [0, 0, 0, 1]])
+
+T4_5 = Matrix([[cos(q5), -sin(q5), 0, a4],
+               [sin(q5) * cos(alpha4), cos(q5) * cos(alpha4), -sin(alpha4), -sin(alpha4) * d5],
+               [sin(q5) * sin(alpha4), cos(q5) * sin(alpha4), cos(alpha4), cos(alpha4) * d5],
+               [0, 0, 0, 1]])
+
+T5_6 = Matrix([[cos(q6), -sin(q6), 0, a5],
+               [sin(q6) * cos(alpha5), cos(q6) * cos(alpha5), -sin(alpha5), -sin(alpha5) * d6],
+               [sin(q6) * sin(alpha5), cos(q6) * sin(alpha5), cos(alpha5), cos(alpha5) * d6],
+               [0, 0, 0, 1]])
+
+T6_EE = Matrix([[cos(q7), -sin(q7), 0, a6],
+                [sin(q7) * cos(alpha6), cos(q7) * cos(alpha6), -sin(alpha6), -sin(alpha6) * d7],
+                [sin(q7) * sin(alpha6), cos(q7) * sin(alpha6), cos(alpha6), cos(alpha6) * d7],
+                [0, 0, 0, 1]])
+```
+
+Of course, the total homogeneous transform between base and gripper is the product of the matrices above, in the order of the joints:
 
 ```python
 
@@ -131,7 +215,7 @@ After we have Ending effatcor posion and distance of the wrist joint to gripper,
 
 WC is now having position of wrist center (Wx, Wy, Wz).
 
-To find 𝜃1,  then we use Wz to project onto the ground plane, we get theta1:
+###### To find 𝜃1,  then we use Wz to project onto the ground plane, we get theta1:
 
 ```python
     theta1 = atan2(WC[1],WC[0])
@@ -141,6 +225,24 @@ Using trigonometry,  we can calculate 𝜃2 and 𝜃3, a is the right side of th
 shown in below image:
 
 ![alt text][image2]
+
+###### q2, q3
+For the second and the third angles, there were also multiple solutions -- I could choose between two positions for the third joint: above the WC or below the WC. I decided to go with the above one, because I was worried that the arm might hit the floor when reaching for objects on the lowest shelf.
+
+The figure I used for the determining the angles:
+
+![Figure for q2, q3][image2]
+
+_q~2~_ becomes then a difference of angles:
+_q~2~ = pi/2 - q~21~ - q~22~_
+and
+_q~21~ = atan(e, f)_
+_q~22~ = acos(c^2^ + a~2~^2^ - b^2^ / 2ca~2~)_ (law of cosines)
+
+_q~3~_ is a bit trickier because of the orientation, but, as represented in the figure:
+_q~3~ = pi/2 + q~31~ - q~32~_
+_q~31~ = atan(a~3~, d~4~)_ (small drop from link 3 to link 4)
+_q~32~ = acos(b^2^ + a~2~^2^ - c^2^ / 2ba~2~)_ (again, law of cosines)
 
 
 ```python
@@ -165,6 +267,7 @@ We can substitute the values we calculated for 𝜃1, 𝜃2 and 𝜃3 to get R0_
 
 R3_6 = inv(R0_3) * R_EE
 
+
 ```python
     # Extract rotation matrix R0_3 from transformation matrix T0_3 the substitute angles q1-3
     R0_3 = T0_1[0:3,0:3] * T1_2[0:3,0:3] * T2_3[0:3,0:3]
@@ -172,6 +275,15 @@ R3_6 = inv(R0_3) * R_EE
 
     # Get rotation matrix R3_6 from (inverse of R0_3 * R_EE)
     R3_6 = R0_3.inv(method="LU") * ROT_EE
+```
+![image8]()
+
+Find q4, q5, q6.
+```
+q4 = atan2(r33, -r13)
+q5 = atan2(sqrt(r21**2 + r22**2), r23)
+q6 = atan2(-r22, r21)
+
 ```
 thus, we can get the rest angles:
 
