@@ -9,13 +9,13 @@
 [image3]: ./misc_images/3.jpg
 [image4]: ./misc_images/4.jpg
 [image5]: ./misc_images/5.jpg
-[image6]: ./misc_images/dh-convention.png
+[image6]: ./misc_images/dh-transform-matrix.png
 
 [image7]: ./misc_images/7.png
 
-[image8]: ./misc_images/urdf.jpg
+[image8]: ./misc_images/urdf.png
 
-[image9]: ./misc_images/8.jpg
+[image9]: ./misc_images/8.png
 ### Kinematic Analysis
 
 This is the diagram of the Kuka KR210 robot:
@@ -69,14 +69,11 @@ Also,
 **Link 7(Gripper Link) :**, this is a fixed link, with a translation along `Z6`. So, `Z6` and `Zg` are *collinear*, so `alpha6 = 0`, `a6 = 0` and `d6 = 0.193(joint6.x) + 0.11(gripper_joint.x)`. Also, since this is fixed(w.r.t link 6), `q7 = 0`.    
 
 
-The following figure represents frame assignment between two links in the Modified DH convention.
-![alt text][image6]
-
 *Modified DH convention axes assignment and parameters.
 
 From the above image it is clear thet the total transform between `link(i-1)` and `link(i)` can be thought of as a *rotation* by `alpha(i-1)` along `X(i-1)`, *translation* by `a(i-1)` along `X(i-1)`, *rotation* by `q(i)` along `Z(i)`, and finally *translation* by `d(i)` along `Z(i)`. 
 
-![alt text][image1]
+
 
 Python code to represent DH parameters table is:
 
@@ -106,6 +103,9 @@ def TF_Matrix(alpha, a, d, q):
 	return TF
 ```
 Then using the following code to substitute the DH parameters into the transformation matrix: 
+
+
+![alt text][image6]
 ```
 T0_1 = Matrix([[cos(q1), -sin(q1), 0, a0],
                [sin(q1) * cos(alpha0), cos(q1) * cos(alpha0), -sin(alpha0), -sin(alpha0) * d1],
@@ -234,8 +234,6 @@ shown in below image:
 For the second and the third angles, there were also multiple solutions -- I could choose between two positions for the third joint: above the WC or below the WC. I decided to go with the above one, because I was worried that the arm might hit the floor when reaching for objects on the lowest shelf.
 
 The figure I used for the determining the angles:
-
-![Figure for q2, q3][image2]
 
 _q~2~_ becomes then a difference of angles:
 _q~2~ = pi/2 - q~21~ - q~22~_
