@@ -14,6 +14,8 @@
 [image8]: ./misc_images/urdf.png
 
 [image9]: ./misc_images/8.png
+[image10]: ./misc_images/result.png
+
 ### Kinematic Analysis
 
 This is the diagram of the Kuka KR210 robot:
@@ -294,7 +296,7 @@ thus, we can get the rest angles:
 ### Result 
 
 the final result of the testing IK_server.py is shown below:
-
+![alt text][image10]
 
 
 I have tested 8/10 for most of the tests, but this is still lots of improvement in this project,
