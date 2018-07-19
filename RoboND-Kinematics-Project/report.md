@@ -6,9 +6,7 @@
 
 [image1]: ./misc_images/fk.png
 [image2]: ./misc_images/misc3.png
-[image3]: ./misc_images/3.jpg
-[image4]: ./misc_images/4.jpg
-[image5]: ./misc_images/5.jpg
+
 [image6]: ./misc_images/dh-transform-matrix.png
 
 [image7]: ./misc_images/7.png
@@ -224,28 +222,17 @@ WC is now having position of wrist center (Wx, Wy, Wz).
 ```python
     theta1 = atan2(WC[1],WC[0])
 ```
+
+
+###### q2, q3
+
 Using trigonometry,  we can calculate 𝜃2 and 𝜃3, a is the right side of the triangle, c is the left and b is the bottom.
 
 shown in below image:
 
 ![alt text][image2]
 
-###### q2, q3
 For the second and the third angles, there were also multiple solutions -- I could choose between two positions for the third joint: above the WC or below the WC. I decided to go with the above one, because I was worried that the arm might hit the floor when reaching for objects on the lowest shelf.
-
-The figure I used for the determining the angles:
-
-_q~2~_ becomes then a difference of angles:
-_q~2~ = pi/2 - q~21~ - q~22~_
-and
-_q~21~ = atan(e, f)_
-_q~22~ = acos(c^2^ + a~2~^2^ - b^2^ / 2ca~2~)_ (law of cosines)
-
-_q~3~_ is a bit trickier because of the orientation, but, as represented in the figure:
-_q~3~ = pi/2 + q~31~ - q~32~_
-_q~31~ = atan(a~3~, d~4~)_ (small drop from link 3 to link 4)
-_q~32~ = acos(b^2^ + a~2~^2^ - c^2^ / 2ba~2~)_ (again, law of cosines)
-
 
 ```python
 			side_a = 1.501
@@ -307,13 +294,7 @@ thus, we can get the rest angles:
 
 the final result of the testing IK_server.py is shown below:
 
-![alt text][image6]
 
-![alt text][image5]
-
-![alt text][image4]
-
-![alt text][image3]
 
 I have tested 8/10 for most of the tests, but this is still lots of improvement in this project,
 1. the timing issue of the project, reponses didn't give enough time for the gripper to work with
