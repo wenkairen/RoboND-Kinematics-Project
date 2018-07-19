@@ -218,14 +218,14 @@ After we have Ending effatcor posion and distance of the wrist joint to gripper,
 
 WC is now having position of wrist center (Wx, Wy, Wz).
 
-###### To find 𝜃1,  then we use Wz to project onto the ground plane, we get theta1:
+#### To find 𝜃1,  then we use Wz to project onto the ground plane, we get theta1:
 
 ```python
     theta1 = atan2(WC[1],WC[0])
 ```
 
 
-###### q2, q3
+#### q2, q3
 
 Using trigonometry,  we can calculate 𝜃2 and 𝜃3, a is the right side of the triangle, c is the left and b is the bottom.
 
