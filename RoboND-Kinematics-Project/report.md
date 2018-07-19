@@ -9,9 +9,13 @@
 [image3]: ./misc_images/3.jpg
 [image4]: ./misc_images/4.jpg
 [image5]: ./misc_images/5.jpg
-[image5]: ./misc_images/6.jpg
-[image7]: ./misc_images/7.jpg
+[image6]: ./misc_images/dh-convention.png
+
+[image7]: ./misc_images/7.png
+
 [image8]: ./misc_images/urdf.jpg
+
+[image9]: ./misc_images/8.jpg
 ### Kinematic Analysis
 
 This is the diagram of the Kuka KR210 robot:
@@ -19,12 +23,12 @@ This is the diagram of the Kuka KR210 robot:
 ![alt text][image1]
 
 The following images for reference.   
-![image7][7]
+![alt text][image7]
 
 the link frames(coordinate systems) choosen according to Modified DH convention. `O(i)` is the origin for link i frame, and `X(i)`, `Z(i)` are the X and Z axis correspondingly, and Z represents the axis of rotation(translation in case of prismatic joints). Since we are using a right handed coordinate system, `Y(i)` can be calculated accordingly.   
 
 
-![image8][urdf]
+![alt text][image8]
 
 the reference frames as specified in the URDF file. Here, `Ojointi` represents ith frame origin(also represented by a black triangle). It also shows various distance between these joint positions as specified in URDF. We will be refering to these values in our description for DH parameter table.
 
@@ -66,13 +70,13 @@ Also,
 
 
 The following figure represents frame assignment between two links in the Modified DH convention.
-![DH Convention][dh-convention]  
+![alt text][image6]
 
 *Modified DH convention axes assignment and parameters.
 
 From the above image it is clear thet the total transform between `link(i-1)` and `link(i)` can be thought of as a *rotation* by `alpha(i-1)` along `X(i-1)`, *translation* by `a(i-1)` along `X(i-1)`, *rotation* by `q(i)` along `Z(i)`, and finally *translation* by `d(i)` along `Z(i)`. 
 
-![DH Transform][dh-transform]   
+![alt text][image1]
 
 Python code to represent DH parameters table is:
 
@@ -276,7 +280,7 @@ R3_6 = inv(R0_3) * R_EE
     # Get rotation matrix R3_6 from (inverse of R0_3 * R_EE)
     R3_6 = R0_3.inv(method="LU") * ROT_EE
 ```
-![image8]()
+![alt text][image9]
 
 Find q4, q5, q6.
 ```
