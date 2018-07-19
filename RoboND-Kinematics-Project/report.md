@@ -5,8 +5,8 @@
 [//]: # (Image References)
 
 [image1]: ./misc_images/fk.png
-[image2]: ./misc_images/misc3.png
-
+[image2]: ./misc_images/23.png
+[image3]: ./misc_images/dhm.png
 [image6]: ./misc_images/dh-transform-matrix.png
 
 [image7]: ./misc_images/7.png
@@ -102,6 +102,7 @@ def TF_Matrix(alpha, a, d, q):
 ```
 Then using the following code to substitute the DH parameters into the transformation matrix: 
 
+![alt text][image3]
 
 ![alt text][image6]
 ```
